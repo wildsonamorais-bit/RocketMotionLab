@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RocketMotionLab Web</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header><div><h1>🚀 RocketMotionLab Web</h1><p>Análise 2D de movimento por vídeo</p></div><button id="reset">Novo experimento</button></header>
+<main>
+<section class="card">
+<h2>1. Carregar vídeo</h2>
+<div class="grid">
+<label>Nome do experimento<input id="name" placeholder="Ex.: Teste 01"></label>
+<label>Massa total (g) — opcional<input id="mass" type="number" min="0" step="0.1" placeholder="Ex.: 6.2"></label>
+</div>
+<label class="upload">Selecionar vídeo<input id="file" type="file" accept="video/*"></label>
+<p class="hint">Use câmera fixa e fita métrica visível no mesmo plano aproximado da trajetória.</p>
+</section>
+
+<section id="workspace" class="card hidden">
+<h2>2. Calibração e marcação</h2>
+<div class="grid">
+<label>Distância real entre os pontos
+<div class="inline"><input id="distance" type="number" value="1" min="0.001" step="0.01">
+<select id="unit"><option value="m">m</option><option value="cm">cm</option></select></div></label>
+<label>FPS de análise<select id="fps"><option>10</option><option>15</option><option selected>20</option><option>30</option></select></label>
+</div>
+<div class="steps"><span id="sa" class="active">A: 1º ponto da fita</span><span id="sb">B: 2º ponto da fita</span><span id="sr">R: foguete</span></div>
+<div class="videoWrap"><video id="video" controls playsinline></video><canvas id="overlay"></canvas></div>
+<div class="buttons"><button id="start">Ir ao início</button><button id="clear">Refazer marcações</button><button id="analyze" disabled>Analisar vídeo</button></div>
+<div id="status" class="status">Aguardando vídeo.</div>
+</section>
+
+<section id="results" class="card hidden">
+<h2>3. Resultados</h2>
+<div id="metrics" class="metrics"></div>
+<div class="chart"><h3>Trajetória</h3><canvas id="traj"></canvas></div>
+<div class="chart"><h3>Altura × tempo</h3><canvas id="height"></canvas></div>
+<div class="chart"><h3>Velocidade × tempo</h3><canvas id="speed"></canvas></div>
+<div class="chart"><h3>Aceleração × tempo</h3><canvas id="accel"></canvas></div>
+<div id="massCharts" class="hidden">
+<div class="chart"><h3>Força resultante estimada × tempo</h3><canvas id="force"></canvas></div>
+<div class="chart"><h3>Energia cinética × tempo</h3><canvas id="ke"></canvas></div>
+<div class="chart"><h3>Energia potencial × tempo</h3><canvas id="pe"></canvas></div>
+</div>
+<button id="save">Salvar experimento no navegador</button>
+<p class="hint">Força e energia são estimativas derivadas do rastreamento 2D e da massa informada.</p>
+</section>
+
+<section class="card">
+<h2>4. Comparar experimentos</h2>
+<div id="saved"></div>
+<div id="compare" class="hidden">
+<div class="chart"><h3>Comparação: altura × tempo</h3><canvas id="cmpHeight"></canvas></div>
+<div class="chart"><h3>Comparação: velocidade × tempo</h3><canvas id="cmpSpeed"></canvas></div>
+<div class="chart"><h3>Comparação: aceleração × tempo</h3><canvas id="cmpAccel"></canvas></div>
+</div>
+</section>
+
+<section class="card"><h2>Sobre</h2><p class="hint">O app analisa movimento e grandezas físicas derivadas. Ele não determina composição química nem energia química de combustão a partir do vídeo.</p></section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,17 +1,39 @@
-# RocketMotionLab Web
+# RocketMotionLab Web v2
 
-Aplicação web para analisar movimento 2D em vídeos.
+Versão web com análise física + módulo químico teórico.
 
-## Abrir localmente
-1. Descompacte o ZIP.
-2. Abra `index.html` no Chrome ou Edge.
-3. Selecione um vídeo.
-4. Marque dois pontos da fita métrica.
-5. Informe a distância real.
-6. Marque o foguete no primeiro frame.
-7. Clique em **Analisar vídeo**.
+## Novidades da v2
 
-## Publicar no GitHub Pages
+- Entrada do volume de solução alcoólica.
+- Entrada da concentração de etanol.
+- Suporte a % v/v e % m/m.
+- Cálculo teórico de:
+  - volume equivalente de etanol;
+  - massa de etanol;
+  - mol de etanol;
+  - O2 estequiométrico necessário;
+  - mol de CO2;
+  - massa de CO2;
+  - volume ideal de CO2 a ~25 °C e 1 atm.
+- Alinhamento opcional do tempo pelo início do movimento.
+- Limiar configurável para detectar início do movimento.
+- Comparações:
+  - CO2 teórico × altura máxima;
+  - CO2 teórico × velocidade máxima;
+  - CO2 teórico × aceleração máxima;
+  - volume de solução × altura máxima.
+
+## Reação usada
+
+C2H5OH + 3 O2 -> 2 CO2 + 3 H2O
+
+## Observação
+
+Os valores químicos são máximos teóricos calculados por estequiometria, assumindo combustão completa.
+Eles não representam medição direta da combustão real.
+
+## Como publicar no GitHub Pages
+
 1. Envie `index.html`, `styles.css` e `app.js` para a raiz do repositório.
 2. Vá em `Settings > Pages`.
 3. Em `Build and deployment`, selecione `Deploy from a branch`.
@@ -19,19 +41,4 @@ Aplicação web para analisar movimento 2D em vídeos.
 5. Folder: `/ (root)`.
 6. Salve.
 
-## O que calcula
-- trajetória 2D
-- altura máxima
-- alcance horizontal
-- velocidade
-- aceleração
-- força estimada, se houver massa
-- energia cinética
-- energia potencial
-- índice didático de estabilidade
-- comparação entre até 3 experimentos
-
-## Observação
-O rastreamento inicial é por similaridade de cor. Funciona melhor com câmera fixa, boa iluminação e objeto contrastante com o fundo.
-
-O app não determina composição química nem energia química de combustão a partir do vídeo.
+Se o repositório já estiver publicado via GitHub Pages, basta substituir os três arquivos antigos pelos da v2.

@@ -3,64 +3,177 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>RocketMotionLab Web</title>
+<title>RocketMotionLab Web v2</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header><div><h1>🚀 RocketMotionLab Web</h1><p>Análise 2D de movimento por vídeo</p></div><button id="reset">Novo experimento</button></header>
+<header>
+  <div>
+    <h1>🚀 RocketMotionLab Web v2</h1>
+    <p>Física do movimento + análise química teórica</p>
+  </div>
+  <button id="reset" class="secondary">Novo experimento</button>
+</header>
+
 <main>
 <section class="card">
-<h2>1. Carregar vídeo</h2>
-<div class="grid">
-<label>Nome do experimento<input id="name" placeholder="Ex.: Teste 01"></label>
-<label>Massa total (g) — opcional<input id="mass" type="number" min="0" step="0.1" placeholder="Ex.: 6.2"></label>
-</div>
-<label class="upload">Selecionar vídeo<input id="file" type="file" accept="video/*"></label>
-<p class="hint">Use câmera fixa e fita métrica visível no mesmo plano aproximado da trajetória.</p>
+  <h2>1. Dados do experimento</h2>
+  <div class="grid">
+    <label>Nome do experimento
+      <input id="name" placeholder="Ex.: Teste Letícia_1mL">
+    </label>
+
+    <label>Massa total do conjunto (g) — opcional
+      <input id="mass" type="number" min="0" step="0.1" placeholder="Ex.: 6.2">
+    </label>
+
+    <label>Volume da solução alcoólica (mL)
+      <input id="alcoholVolume" type="number" min="0" step="0.01" value="1.00">
+    </label>
+
+    <label>Concentração de etanol (%)
+      <input id="alcoholPercent" type="number" min="0" max="100" step="0.1" value="70">
+    </label>
+
+    <label>Base da concentração
+      <select id="alcoholBasis">
+        <option value="vv" selected>% v/v</option>
+        <option value="mm">% m/m</option>
+      </select>
+    </label>
+
+    <label>Densidade da solução (g/mL) — usada apenas em % m/m
+      <input id="solutionDensity" type="number" min="0.1" step="0.001" value="0.88">
+    </label>
+  </div>
+
+  <label class="upload">Selecionar vídeo
+    <input id="file" type="file" accept="video/*">
+  </label>
+
+  <p class="hint">
+    A parte química calcula <strong>valores máximos teóricos</strong> assumindo combustão completa do etanol.
+    Ela não mede diretamente a combustão real pelo vídeo.
+  </p>
 </section>
 
 <section id="workspace" class="card hidden">
-<h2>2. Calibração e marcação</h2>
-<div class="grid">
-<label>Distância real entre os pontos
-<div class="inline"><input id="distance" type="number" value="1" min="0.001" step="0.01">
-<select id="unit"><option value="m">m</option><option value="cm">cm</option></select></div></label>
-<label>FPS de análise<select id="fps"><option>10</option><option>15</option><option selected>20</option><option>30</option></select></label>
-</div>
-<div class="steps"><span id="sa" class="active">A: 1º ponto da fita</span><span id="sb">B: 2º ponto da fita</span><span id="sr">R: foguete</span></div>
-<div class="videoWrap"><video id="video" controls playsinline></video><canvas id="overlay"></canvas></div>
-<div class="buttons"><button id="start">Ir ao início</button><button id="clear">Refazer marcações</button><button id="analyze" disabled>Analisar vídeo</button></div>
-<div id="status" class="status">Aguardando vídeo.</div>
+  <h2>2. Calibração e marcação</h2>
+
+  <div class="grid">
+    <label>Distância real entre os pontos
+      <div class="inline">
+        <input id="distance" type="number" value="1" min="0.001" step="0.01">
+        <select id="unit">
+          <option value="m">m</option>
+          <option value="cm">cm</option>
+        </select>
+      </div>
+    </label>
+
+    <label>FPS de análise
+      <select id="fps">
+        <option>10</option>
+        <option>15</option>
+        <option selected>20</option>
+        <option>30</option>
+      </select>
+    </label>
+
+    <label>Limiar para detectar início do movimento (m/s)
+      <input id="motionThreshold" type="number" min="0" step="0.01" value="0.05">
+    </label>
+
+    <label>Alinhar tempo pelo início do movimento
+      <select id="alignMotion">
+        <option value="yes" selected>Sim</option>
+        <option value="no">Não</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="steps">
+    <span id="sa" class="active">A: 1º ponto da fita</span>
+    <span id="sb">B: 2º ponto da fita</span>
+    <span id="sr">R: foguete</span>
+  </div>
+
+  <div class="videoWrap">
+    <video id="video" controls playsinline></video>
+    <canvas id="overlay"></canvas>
+  </div>
+
+  <div class="buttons">
+    <button id="start" class="secondary">Ir ao início</button>
+    <button id="clear" class="secondary">Refazer marcações</button>
+    <button id="analyze" disabled>Analisar vídeo</button>
+  </div>
+
+  <div id="status" class="status">Aguardando marcações.</div>
 </section>
 
 <section id="results" class="card hidden">
-<h2>3. Resultados</h2>
-<div id="metrics" class="metrics"></div>
-<div class="chart"><h3>Trajetória</h3><canvas id="traj"></canvas></div>
-<div class="chart"><h3>Altura × tempo</h3><canvas id="height"></canvas></div>
-<div class="chart"><h3>Velocidade × tempo</h3><canvas id="speed"></canvas></div>
-<div class="chart"><h3>Aceleração × tempo</h3><canvas id="accel"></canvas></div>
-<div id="massCharts" class="hidden">
-<div class="chart"><h3>Força resultante estimada × tempo</h3><canvas id="force"></canvas></div>
-<div class="chart"><h3>Energia cinética × tempo</h3><canvas id="ke"></canvas></div>
-<div class="chart"><h3>Energia potencial × tempo</h3><canvas id="pe"></canvas></div>
-</div>
-<button id="save">Salvar experimento no navegador</button>
-<p class="hint">Força e energia são estimativas derivadas do rastreamento 2D e da massa informada.</p>
+  <h2>3. Resultados físicos</h2>
+  <div id="metrics" class="metrics"></div>
+
+  <div class="chart"><h3>Trajetória</h3><canvas id="traj"></canvas></div>
+  <div class="chart"><h3>Altura × tempo</h3><canvas id="height"></canvas></div>
+  <div class="chart"><h3>Velocidade × tempo</h3><canvas id="speed"></canvas></div>
+  <div class="chart"><h3>Aceleração × tempo</h3><canvas id="accel"></canvas></div>
+
+  <div id="massCharts" class="hidden">
+    <div class="chart"><h3>Força resultante estimada × tempo</h3><canvas id="force"></canvas></div>
+    <div class="chart"><h3>Energia cinética × tempo</h3><canvas id="ke"></canvas></div>
+    <div class="chart"><h3>Energia potencial × tempo</h3><canvas id="pe"></canvas></div>
+  </div>
+</section>
+
+<section id="chemistry" class="card hidden">
+  <h2>4. Análise química teórica</h2>
+
+  <div class="reaction">
+    C₂H₅OH + 3 O₂ → 2 CO₂ + 3 H₂O
+  </div>
+
+  <div id="chemMetrics" class="metrics"></div>
+
+  <div class="chart"><h3>Fluxo estequiométrico teórico</h3><canvas id="chemFlow"></canvas></div>
+
+  <p class="hint">
+    Os valores acima representam o <strong>máximo teórico</strong> para combustão completa.
+    Na prática, a quantidade realmente formada pode ser menor.
+  </p>
+
+  <button id="save">Salvar experimento no navegador</button>
 </section>
 
 <section class="card">
-<h2>4. Comparar experimentos</h2>
-<div id="saved"></div>
-<div id="compare" class="hidden">
-<div class="chart"><h3>Comparação: altura × tempo</h3><canvas id="cmpHeight"></canvas></div>
-<div class="chart"><h3>Comparação: velocidade × tempo</h3><canvas id="cmpSpeed"></canvas></div>
-<div class="chart"><h3>Comparação: aceleração × tempo</h3><canvas id="cmpAccel"></canvas></div>
-</div>
+  <h2>5. Comparar experimentos salvos</h2>
+  <div id="saved"></div>
+
+  <div id="compare" class="hidden">
+    <div class="chart"><h3>Comparação: altura × tempo</h3><canvas id="cmpHeight"></canvas></div>
+    <div class="chart"><h3>Comparação: velocidade × tempo</h3><canvas id="cmpSpeed"></canvas></div>
+    <div class="chart"><h3>Comparação: aceleração × tempo</h3><canvas id="cmpAccel"></canvas></div>
+
+    <h3 class="sectionTitle">Física × Química</h3>
+    <div class="chart"><h3>CO₂ teórico × altura máxima</h3><canvas id="cmpCo2Height"></canvas></div>
+    <div class="chart"><h3>CO₂ teórico × velocidade máxima</h3><canvas id="cmpCo2Speed"></canvas></div>
+    <div class="chart"><h3>CO₂ teórico × aceleração máxima</h3><canvas id="cmpCo2Accel"></canvas></div>
+    <div class="chart"><h3>Volume de solução × altura máxima</h3><canvas id="cmpVolHeight"></canvas></div>
+  </div>
 </section>
 
-<section class="card"><h2>Sobre</h2><p class="hint">O app analisa movimento e grandezas físicas derivadas. Ele não determina composição química nem energia química de combustão a partir do vídeo.</p></section>
+<section class="card">
+  <h2>Observações</h2>
+  <p class="hint">
+    O RocketMotionLab estima grandezas físicas a partir de rastreamento 2D e calcula grandezas químicas
+    por estequiometria teórica. O aplicativo não determina composição de gases nem rendimento real da
+    reação por análise de vídeo.
+  </p>
+</section>
 </main>
+
 <script src="app.js"></script>
 </body>
 </html>
